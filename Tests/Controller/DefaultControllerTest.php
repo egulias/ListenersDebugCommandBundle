@@ -1,6 +1,6 @@
 <?php
 
-namespace Egulias\ExtraCLIToolsBundle\Tests\Controller;
+namespace Egulias\ListenersDebugCommandBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

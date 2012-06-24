@@ -1,6 +1,6 @@
 <?php
 
-namespace Egulias\ExtraCLIToolsBundle\Controller;
+namespace Egulias\ListenersDebugCommandBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

@@ -6,11 +6,11 @@
 
     <!--
     <parameters>
-        <parameter key="egulias_extra_cli_tools.example.class">Egulias\ExtraCLIToolsBundle\Example</parameter>
+        <parameter key="egulias_listeners_debug_command.example.class">Egulias\ListenersDebugCommandBundle\Example</parameter>
     </parameters>
 
     <services>
-        <service id="egulias_extra_cli_tools.example" class="%egulias_extra_cli_tools.example.class%">
+        <service id="egulias_listeners_debug_command.example" class="%egulias_listeners_debug_command.example.class%">
             <argument type="service" id="service_id" />
             <argument>plain_value</argument>
             <argument>%parameter_name%</argument>
