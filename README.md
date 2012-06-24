@@ -18,7 +18,7 @@ to allow space for listeners related information.
 Add to your `/deps` file :
 
 ```
-[EguliasQuizBundle]
+[EguliasListnersDebugCommandBundle]
     git=git@github.com:egulias/ListenersDebugCommandBundle.git
     target=/bundles/Egulias/ListenersDebugCommandBundle
 ```
@@ -38,7 +38,7 @@ And make a `php bin/vendors install`.
       ));
 ```
 
-## Add EguliasQuizBundle to your application kernel
+## Add ListenersDebugCommandBundle to your application kernel
 
 ``` php
 <?php
@@ -48,7 +48,7 @@ And make a `php bin/vendors install`.
   {
     return array(
       // ...
-      new Egulias\QuizBundle\ListenersDebugCommandBundle(),
+      new Egulias\ListenersDebugCommandBundle\ListenersDebugCommandBundle(),
       // ...
       );
   }
