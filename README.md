@@ -4,6 +4,13 @@ This bundle provides a simple command `container:debug:listeners` to allow to ea
 provinding useful information about those defined in the app. It will fetch information about all the listeners 
 tagged with .event_listener
 
+## DISCLAIMER
+
+Part of this code has been borrowed from FrameworkBundle\Command\ContainerDebugCommand. From this command, 
+method resolveServiceDefinition($serviceId) is setted as private, avoiding any posibility of re use. A PR has been
+issued [here](https://github.com/symfony/symfony/pull/4628) to allow this extension. The output methods had been changed
+to allow space for listeners related information.
+
 # Installation and configuration
 
 ## Get the bundle
