@@ -123,9 +123,9 @@ EOF
     {
         // set the label to specify public or public+private
         if ($showPrivate) {
-            $label = '<comment>Public</comment> and <comment>private</comment> services';
+            $label = '<comment>Public</comment> and <comment>private</comment> (services) listeners';
         } else {
-            $label = '<comment>Public</comment> services';
+            $label = '<comment>Public</comment> (services) listeners';
         }
 
         $output->writeln($this->getHelper('formatter')->formatSection('container', $label));
