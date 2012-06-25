@@ -48,7 +48,7 @@ And make a `php bin/vendors install`.
   {
     return array(
       // ...
-      new Egulias\ListenersDebugCommandBundle\ListenersDebugCommandBundle(),
+      new Egulias\ListenersDebugCommandBundle\EguliasListenersDebugCommandBundle(),
       // ...
       );
   }
