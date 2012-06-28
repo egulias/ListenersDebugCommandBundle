@@ -8,8 +8,9 @@ tagged with .event_listener
 
 Part of this code has been borrowed from FrameworkBundle\Command\ContainerDebugCommand. From this command, 
 method resolveServiceDefinition($serviceId) is setted as private, avoiding any posibility of re use. A PR has been
-issued [here](https://github.com/symfony/symfony/pull/4628) to allow this extension. The output methods had been changed
-to allow space for listeners related information.
+issued [here](https://github.com/symfony/symfony/pull/4658) (currently merged) to allow this extension, 
+probably available for the next stable realese of Symfony. I'll update it then. 
+The output methods had been changed to allow space for listeners related information.
 
 # Installation and configuration
 
