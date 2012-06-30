@@ -29,14 +29,17 @@ class ListenersCommand extends ContainerAwareCommand
     protected $containerBuilder;
 
     protected $listeners = array();
+
     /**
      * @see Command
      */
     protected function configure()
     {
         $this
-            ->setDefinition(array(
-                  new InputArgument('name', InputArgument::OPTIONAL, 'A service name (foo)  or search (foo*)'),
+            ->setDefinition(
+                array(
+                  new InputArgument('name', InputArgument::OPTIONAL, 'A (service) listener name (foo)  or search (foo*)'),
+                  new InputOption('event', null,  InputOption::VALUE_REQUIRED, 'Provide an event name (foo.bar) to filter'),
                   new InputOption('show-private', null, InputOption::VALUE_NONE, 'Use to show public *and* private services listeners'),
                 )
             )
@@ -48,10 +51,8 @@ The <info>container:debug:listeners</info> command displays all configured <comm
   <info>container:debug:listeners</info>
 
 EOF
-            )
-        ;
+            );
     }
-
 
     /**
      * @see Command
@@ -64,13 +65,18 @@ EOF
         //$serviceIds = $this->containerBuilder->getServiceIds();
         $listenersIds = $this->getListenersIds();
 
+        $options = array(
+            'show-private' => $input->getOption('show-private'),
+            'event'        => $input->getOption('event')
+        );
+
         // sort so that it reads like an index of services
         asort($listenersIds);
 
         if ($name) {
-            $this->outputListener($output, $name);
+            $this->outputListener($output, $name, $options);
         } else {
-            $this->outputListeners($output, $listenersIds, $input->getOption('show-private'));
+            $this->outputListeners($output, $listenersIds, $options );
         }
     }
 
@@ -109,18 +115,19 @@ EOF
         return $listenersIds;
     }
 
-
     /**
      * outputListeners
      *
      * @param OutputInterface $output       Output
      * @param array           $listenersIds array of listeners ids
-     * @param boolean         $showPrivate  Show private listeners
+     * @param array           $options      array of options from the console
      *
      * @return void
      */
-    protected function outputListeners(OutputInterface $output, $listenersIds, $showPrivate = false)
+    protected function outputListeners(OutputInterface $output, $listenersIds, $options = array())
     {
+        $showPrivate = $options['show-private'];
+        $filterEvent = $options['event'];
         // set the label to specify public or public+private
         if ($showPrivate) {
             $label = '<comment>Public</comment> and <comment>private</comment> (services) listeners';
@@ -155,16 +162,18 @@ EOF
         $format  = '%-'.$maxName.'s %-'.$maxScope.'s %s';
 
         // the title field needs extra space to make up for comment tags
-        $format1  = '%-'.($maxName + 19).'s %-'.($maxScope + 50).'s %s';
+        $format1  = '%-'.($maxName + 19).'s %-'.($maxScope + 19).'s %s';
         $output->writeln(sprintf($format1, '<comment>Name</comment>', '<comment>Event</comment>', '<comment>Class Name</comment>'));
 
         foreach ($listenersIds as $serviceId) {
             $definition = $this->resolveServiceDefinition($serviceId);
 
             if ($definition instanceof Definition) {
-                $output->writeln(
-                    sprintf($format, $serviceId, $this->listeners[$serviceId]['tag']['event'], $definition->getClass())
-                );
+                if ($this->listeners[$serviceId]['tag']['event'] == $filterEvent || !$filterEvent) {
+                    $output->writeln(
+                        sprintf($format, $serviceId, $this->listeners[$serviceId]['tag']['event'], $definition->getClass())
+                    );
+                }
             } elseif ($definition instanceof Alias) {
                 $alias = $definition;
                 $output->writeln(
@@ -205,7 +214,8 @@ EOF
                     }
                 }
             }
-            $tags = $definition->getTags() ? implode(', ', array_keys($definition->getTags())) : '-';
+
+            $tags = $tags ? implode(', ', array_keys($tags)) : '-';
             $output->writeln(sprintf('<comment>Tags</comment>         %s', $tags));
             $public = $definition->isPublic() ? 'yes' : 'no';
             $output->writeln(sprintf('<comment>Public</comment>       %s', $public));
