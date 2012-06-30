@@ -12,6 +12,21 @@ issued [here](https://github.com/symfony/symfony/pull/4658) (currently merged) t
 probably available for the next stable realese of Symfony. I'll update it then. 
 The output methods had been changed to allow space for listeners related information.
 
+As soon as the next Symfony 2.1.x stable reales appears, the command will be updated.
+
+# Usage
+
+As for any command you should use: `app/console` from your proyect root.
+The command would be:
+`app/console container:debug:listeners`
+
+## Available options
+
+There are 2 available options:
+
+* --show-private :    if issued will show also private services
+* --event=event.name: if issued will filter to show only the listeners listening to the given name 
+
 # Installation and configuration
 
 ## Get the bundle
