@@ -173,9 +173,11 @@ EOF
 
             if ($definition instanceof Definition) {
                 foreach ($this->listeners[$serviceId]['tag'] as $listener) {
-                    $output->writeln(
-                        sprintf($format, $serviceId, $listener['event'], $definition->getClass())
-                    );
+                    if ($listener['event'] == $filterEvent || !$filterEvent) {
+                        $output->writeln(
+                            sprintf($format, $serviceId, $listener['event'], $definition->getClass())
+                        );
+                    }
                 }
             } elseif ($definition instanceof Alias) {
                 $alias = $definition;
