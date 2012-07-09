@@ -27,6 +27,11 @@ There are 2 available options:
 * --show-private :    if issued will show also private services
 * --event=event.name: if issued will filter to show only the listeners listening to the given name 
 
+## Sample output
+
+[Without options]("https://gist.github.com/3075397")
+
+
 # Installation and configuration
 
 ## Get the bundle
