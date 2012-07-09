@@ -146,7 +146,7 @@ EOF
             if ($definition instanceof Definition) {
                 // filter out private services unless shown explicitly
                 if (!$showPrivate && !$definition->isPublic()) {
-                    unset($serviceIds[$key]);
+                    unset($listenersIds[$key]);
                     continue;
                 }
 
