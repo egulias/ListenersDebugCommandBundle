@@ -29,7 +29,8 @@ There are 2 available options:
 
 ## Sample output
 
-[Without options]("https://gist.github.com/3075397")
+* Output for `container:debug:listeners` [Without options](https://gist.github.com/3077494)
+* Output for `container:debug:listeners --event=kernel.request` [Here](https://gist.github.com/3077506)
 
 
 # Installation and configuration
