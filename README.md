@@ -24,7 +24,7 @@ There are 2 available options:
 
 ## Sample output
 
-* Output for `container:debug:listeners`                        [Without options](https://gist.github.com/3077494)
+* Output for `container:debug:listeners`                        [Here](https://gist.github.com/3077494)
 * Output for `container:debug:listeners --event=kernel.request` [Here](https://gist.github.com/3077506)
 * Output for `container:debug:listeners event.name`             [Here](https://gist.github.com/3077521)
 
