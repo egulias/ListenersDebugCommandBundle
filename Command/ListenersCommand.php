@@ -45,6 +45,8 @@ class ListenersCommand extends ContainerDebugCommand
                 array(
                   new InputArgument('name', InputArgument::OPTIONAL, 'A (service) listener name (foo)  or search (foo*)'),
                   new InputOption('event', null,  InputOption::VALUE_REQUIRED, 'Provide an event name (foo.bar) to filter'),
+                  new InputOption('susbcribers', null, InputOption::VALUE_NONE, 'Use to show *only* event subscribers'),
+                  new InputOption('listeners', null, InputOption::VALUE_NONE, 'Use to show *only* event listeners'),
                   new InputOption('show-private', null, InputOption::VALUE_NONE, 'Use to show public *and* private services listeners'),
                 )
             )
