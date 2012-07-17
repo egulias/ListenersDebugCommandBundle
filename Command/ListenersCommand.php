@@ -32,7 +32,7 @@ class ListenersCommand extends ContainerDebugCommand
     protected $listeners = array();
 
     /**
-     * @see Command
+     * {@inherit}
      */
     protected function configure()
     {
@@ -56,14 +56,13 @@ EOF
     }
 
     /**
-     * @see Command
+     * {@inherit}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $name = $input->getArgument('name');
 
         $this->containerBuilder = $this->getContainerBuilder();
-        //$serviceIds = $this->containerBuilder->getServiceIds();
         $listenersIds = $this->getListenersIds();
 
         $options = array(
@@ -104,12 +103,11 @@ EOF
                 continue;
             }
             $keys = array_keys($tags);
-            if (preg_match('/.+\.event_listener/', $keys[0])) {
+            if (preg_match('/.+\.event_listener/', $keys[0]) || preg_match('/.+\.event_subscriber/', $keys[0])) {
                 $fullTags[$keys[0]] = $keys[0];
             }
         }
         foreach ($fullTags as $tag) {
-
             $services = $this->containerBuilder->findTaggedServiceIds($tag);
             foreach ($services as $id => $events) {
                 $this->listeners[$id]['tag'] = $events;
@@ -163,20 +161,39 @@ EOF
                 $maxName = strlen($serviceId);
             }
         }
-        $format  = '%-'.$maxName.'s %-'.$maxScope.'s %s';
+        $format  = '%-'.$maxName.'s %-'.$maxScope.'s %-12s %s ';
 
         // the title field needs extra space to make up for comment tags
-        $format1  = '%-'.($maxName + 19).'s %-'.($maxScope + 19).'s %s';
-        $output->writeln(sprintf($format1, '<comment>Name</comment>', '<comment>Event</comment>', '<comment>Class Name</comment>'));
+        $format1  = '%-'.($maxName + 19).'s %-'.($maxScope + 19).'s %8s %s';
+        $output->writeln(
+            sprintf(
+                $format1,
+                '<comment>Name</comment>',
+                '<comment>Event</comment>',
+                '<comment>Type        </comment>',
+                '<comment>Class Name</comment>'
+            )
+        );
 
         foreach ($listenersIds as $serviceId) {
             $definition = $this->resolveServiceDefinition($serviceId);
 
             if ($definition instanceof Definition) {
                 foreach ($this->listeners[$serviceId]['tag'] as $listener) {
-                    if ($listener['event'] == $filterEvent || !$filterEvent) {
+                    //this is probably an EventSubscriber
+                    if (!isset($listener['event'])) {
+                        $events = $this->getEventSubscriberInformation($definition->getClass());
+                        foreach ($events as $name => $event) {
+                            if ($name == $filterEvent || !$filterEvent) {
+                                $output->writeln(
+                                    sprintf($format, $serviceId, $name, 'subscriber', $definition->getClass())
+                                );
+                            }
+                        }
+
+                    } else if ($listener['event'] == $filterEvent || !$filterEvent) {
                         $output->writeln(
-                            sprintf($format, $serviceId, $listener['event'], $definition->getClass())
+                            sprintf($format, $serviceId, $listener['event'], 'listener', $definition->getClass())
                         );
                     }
                 }
@@ -236,4 +253,25 @@ EOF
         }
     }
 
+    /**
+     * getEventSubscriberInformation
+     *
+     * @param mixed $class
+     *
+     * @return array array('event.name' => array(array('method','priority')))
+     */
+    protected function getEventSubscriberInformation($class)
+    {
+        $events = array();
+        $reflectionClass = new \ReflectionClass($class);
+        $interfaces = $reflectionClass->getInterfaceNames();
+        foreach ($interfaces as $interface) {
+            if ($interface == 'Symfony\\Component\\EventDispatcher\\EventSubscriberInterface') {
+                $events = $class::getSubscribedEvents();
+                break;
+            }
+        }
+
+        return $events;
+    }
 }
