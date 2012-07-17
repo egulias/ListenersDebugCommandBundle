@@ -104,13 +104,16 @@ EOF
                 continue;
             }
             $keys = array_keys($tags);
-            $tag = $keys[0];
-            if (preg_match('/.+\.event_listener/', $tag)) {
-                $services = $this->containerBuilder->findTaggedServiceIds($tag);
-                foreach ($services as $id => $events) {
-                    $this->listeners[$id]['tag'] = $tags[$tag][0];
-                    $listenersIds[$id] = $id;
-                }
+            if (preg_match('/.+\.event_listener/', $keys[0])) {
+                $fullTags[$keys[0]] = $keys[0];
+            }
+        }
+        foreach ($fullTags as $tag) {
+
+            $services = $this->containerBuilder->findTaggedServiceIds($tag);
+            foreach ($services as $id => $events) {
+                $this->listeners[$id]['tag'] = $events;
+                $listenersIds[$id] = $id;
             }
         }
         return $listenersIds;
@@ -147,7 +150,7 @@ EOF
             if ($definition instanceof Definition) {
                 // filter out private services unless shown explicitly
                 if (!$showPrivate && !$definition->isPublic()) {
-                    unset($serviceIds[$key]);
+                    unset($listenersIds[$key]);
                     continue;
                 }
 
@@ -170,10 +173,12 @@ EOF
             $definition = $this->resolveServiceDefinition($serviceId);
 
             if ($definition instanceof Definition) {
-                if ($this->listeners[$serviceId]['tag']['event'] == $filterEvent || !$filterEvent) {
-                    $output->writeln(
-                        sprintf($format, $serviceId, $this->listeners[$serviceId]['tag']['event'], $definition->getClass())
-                    );
+                foreach ($this->listeners[$serviceId]['tag'] as $listener) {
+                    if ($listener['event'] == $filterEvent || !$filterEvent) {
+                        $output->writeln(
+                            sprintf($format, $serviceId, $listener['event'], $definition->getClass())
+                        );
+                    }
                 }
             } elseif ($definition instanceof Alias) {
                 $alias = $definition;

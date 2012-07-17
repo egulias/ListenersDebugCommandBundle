@@ -22,6 +22,13 @@ There are 2 available options:
 * --show-private :    if issued will show also private services
 * --event=event.name: if issued will filter to show only the listeners listening to the given name 
 
+## Sample output
+
+* Output for `container:debug:listeners`                        [Without options](https://gist.github.com/3077494)
+* Output for `container:debug:listeners --event=kernel.request` [Here](https://gist.github.com/3077506)
+* Output for `container:debug:listeners event.name`             [Here](https://gist.github.com/3077521)
+
+
 # Installation and configuration
 
 ## Get the bundle
