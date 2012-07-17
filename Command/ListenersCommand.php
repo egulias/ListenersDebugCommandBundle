@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerDebugCommand;
 
 
 /**
@@ -20,14 +20,15 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
  *
  * @author Eduardo Gulias <me@egulias.com>
  */
-class ListenersCommand extends ContainerAwareCommand
+class ListenersCommand extends ContainerDebugCommand
 {
 
-    /**
-     * @var ContainerBuilder
-     */
-    protected $containerBuilder;
 
+    /**
+     * listeners
+     *
+     * @var array
+     */
     protected $listeners = array();
 
     /**
@@ -228,55 +229,6 @@ EOF
             $output->writeln(sprintf('<comment>Service Id</comment>   %s', $serviceId));
             $output->writeln(sprintf('<comment>Class</comment>        %s', get_class($service)));
         }
-    }
-
-    /**
-     * Loads the ContainerBuilder from the cache.
-     *
-     * @return ContainerBuilder
-     */
-    protected function getContainerBuilder()
-    {
-        if (!$this->getApplication()->getKernel()->isDebug()) {
-            throw new \LogicException(sprintf('Debug information about the container is only available in debug mode.'));
-        }
-
-        if (!file_exists($cachedFile = $this->getContainer()->getParameter('debug.container.dump'))) {
-            throw new \LogicException(sprintf('Debug information about the container could not be found. Please clear the cache and try again.'));
-        }
-
-        $container = new ContainerBuilder();
-
-        $loader = new XmlFileLoader($container, new FileLocator());
-        $loader->load($cachedFile);
-
-        return $container;
-    }
-
-
-    /**
-     * Given an array of service IDs, this returns the array of corresponding
-     * Definition and Alias objects that those ids represent.
-     *
-     * @param string $serviceId The service id to resolve
-     *
-     * @return \Symfony\Component\DependencyInjection\Definition|\Symfony\Component\DependencyInjection\Alias
-     *
-     * @see FrameworkBundle\Command\ContainerDebugCommand
-     */
-    protected function resolveServiceDefinition($serviceId)
-    {
-        if ($this->containerBuilder->hasDefinition($serviceId)) {
-            return $this->containerBuilder->getDefinition($serviceId);
-        }
-
-        // Some service IDs don't have a Definition, they're simply an Alias
-        if ($this->containerBuilder->hasAlias($serviceId)) {
-            return $this->containerBuilder->getAlias($serviceId);
-        }
-
-        // the service has been injected in some special way, just return the service
-        return $this->containerBuilder->get($serviceId);
     }
 
 }
