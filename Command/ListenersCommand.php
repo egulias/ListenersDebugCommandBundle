@@ -23,6 +23,10 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerDebugCommand;
 class ListenersCommand extends ContainerDebugCommand
 {
 
+    const LISTENER_PATTERN = '/.+\.event_listener/';
+
+
+    const SUBSCRIBER_PATTERN = '/.+\.event_subscriber/';
 
     /**
      * listeners
@@ -83,7 +87,7 @@ EOF
     /**
      * getListenersIds
      *
-     * Searches for any number of defined listeners under the tag "*.event_listener"
+     * Searches for any number of defined listeners under the tag "*.event_listener" or "*.event_subscriber"
      *
      * @return array listeners ids
      */
@@ -103,7 +107,7 @@ EOF
                 continue;
             }
             $keys = array_keys($tags);
-            if (preg_match('/.+\.event_listener/', $keys[0]) || preg_match('/.+\.event_subscriber/', $keys[0])) {
+            if (preg_match(self::LISTENER_PATTERN, $keys[0]) || preg_match(self::SUBSCRIBER_PATTERN, $keys[0])) {
                 $fullTags[$keys[0]] = $keys[0];
             }
         }
@@ -222,19 +226,35 @@ EOF
         $output->writeln('');
 
         if ($definition instanceof Definition) {
+            $type = ($this->classIsEventSubscriber($definition->getClass())) ? 'subscriber' : 'listener';
             $output->writeln(sprintf('<comment>Listener Id</comment>   %s', $serviceId));
+            $output->writeln(sprintf('<comment>Type:</comment>         %s', $type));
             $output->writeln(sprintf('<comment>Class</comment>         %s', $definition->getClass()));
             $output->writeln(sprintf('<comment>Listens to:</comment>', ''));
 
             $tags = $definition->getTags();
             foreach ($tags as $tag => $details) {
-                foreach ($details as $current) {
-                    if (preg_match('/.+\.event_listener/', $tag)) {
+                if (preg_match(self::SUBSCRIBER_PATTERN, $tag)) {
+                    $events = $this->getEventSubscriberInformation($definition->getClass());
+                    foreach ($events as $name => $current) {
+                        //Exception when event only has the method name
+                        if (!is_array($current)) {
+                            $current = array($current);
+                        }
+                        $output->writeln(sprintf('<comment>  -Event</comment>         %s', $name));
+                        $output->writeln(sprintf('<comment>  -Method</comment>        %s', $current[0]));
+                        $priority = (isset($current[1])) ? $current[1] : 0;
+                        $output->writeln(sprintf('<comment>  -Priority</comment>      %s', $priority));
+                        $output->writeln(sprintf('<comment>  -----------------------------------------</comment>', $priority));
+                    }
+                } else if (preg_match(self::LISTENER_PATTERN, $tag)) {
+                    foreach ($details as $current) {
                         $output->writeln(sprintf('<comment>  -Event</comment>         %s', $current['event']));
                         $output->writeln(sprintf('<comment>  -Method</comment>        %s', $current['method']));
                         $priority = (isset($current['priority'])) ? $current['priority'] : 0;
                         $output->writeln(sprintf('<comment>  -Priority</comment>      %s', $priority));
                     }
+
                 }
             }
 
@@ -254,13 +274,13 @@ EOF
     }
 
     /**
-     * getEventSubscriberInformation
+     * Obtains the information available from class if it is defined as an EventSubscriber
      *
-     * @param mixed $class
+     * @param string $class Fully qualified class name
      *
      * @return array array('event.name' => array(array('method','priority')))
      */
-    protected function getEventSubscriberInformation($class)
+    public function getEventSubscriberInformation($class)
     {
         $events = array();
         $reflectionClass = new \ReflectionClass($class);
@@ -273,5 +293,27 @@ EOF
         }
 
         return $events;
+    }
+
+    /**
+     * Tell if a $class is an EventSubscriber
+     *
+     * @param string $class Fully qualified class name
+     *
+     * @return boolean
+     */
+    public function classIsEventSubscriber($class)
+    {
+        $isSubscriber = false;
+        $reflectionClass = new \ReflectionClass($class);
+        $interfaces = $reflectionClass->getInterfaceNames();
+        foreach ($interfaces as $interface) {
+            if ($interface == 'Symfony\\Component\\EventDispatcher\\EventSubscriberInterface') {
+                $isSubscriber = true;
+                break;
+            }
+        }
+
+        return $isSubscriber;
     }
 }

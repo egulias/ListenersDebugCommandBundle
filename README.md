@@ -22,11 +22,17 @@ There are 2 available options:
 * --show-private :    if issued will show also private services
 * --event=event.name: if issued will filter to show only the listeners listening to the given name 
 
-## Sample output
+## Sample output (Symfony 2.1.x)
+
+* Output for `container:debug:listeners`                          [Here](https://gist.github.com/3132219)
+* Output for `container:debug:listeners --event=kernel.response`  [Here](https://gist.github.com/3132227)
+* Output for `container:debug:listeners listener.id`              [Here](https://gist.github.com/3132499)
+
+## Sample output (Symfony 2.0.x)
 
 * Output for `container:debug:listeners`                        [Here](https://gist.github.com/3077494)
 * Output for `container:debug:listeners --event=kernel.request` [Here](https://gist.github.com/3077506)
-* Output for `container:debug:listeners event.name`             [Here](https://gist.github.com/3077521)
+* Output for `container:debug:listeners listener.id`             [Here](https://gist.github.com/3077521)
 
 
 # Installation and configuration
