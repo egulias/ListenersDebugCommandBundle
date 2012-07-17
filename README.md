@@ -4,20 +4,15 @@ This bundle provides a simple command `container:debug:listeners` to allow to ea
 provinding useful information about those defined in the app. It will fetch information about all the listeners 
 tagged with .event_listener
 
-## DISCLAIMER
+## IMPORTANT
 
-Part of this code has been borrowed from FrameworkBundle\Command\ContainerDebugCommand. From this command, 
-method resolveServiceDefinition($serviceId) is setted as private, avoiding any posibility of re use. A PR has been
-issued [here](https://github.com/symfony/symfony/pull/4658) (currently merged) to allow this extension, 
-probably available for the next stable realese of Symfony. I'll update it then. 
-The output methods had been changed to allow space for listeners related information.
-
-As soon as the next Symfony 2.1.x stable reales appears, the command will be updated.
+If you are using this from Symfony 2.0.x, please update your deps file to use version=symfony2.0.x which is the current
+stable branch for Symfony 2.0.x
 
 # Usage
 
 As for any command you should use: `app/console` from your proyect root.
-The command would be:
+The command is:
 `app/console container:debug:listeners`
 
 ## Available options
@@ -31,14 +26,48 @@ There are 2 available options:
 
 ## Get the bundle
 
+##Symfony 2.1.x
+
+Add to your composer.json
+
+```
+{
+    "require": {
+        "egulias/listeners-debug-command-bundle": "*"
+    }
+}
+```
+
+Use composer to download the new requirement
+``` 
+$ php composer.phar update friendsofsymfony/user-bundle
+```
+
+## Add ListenersDebugCommandBundle to your application kernel
+
+``` php
+<?php
+
+  // app/AppKernel.php
+  public function registerBundles()
+  {
+    return array(
+      // ...
+      new Egulias\ListenersDebugCommandBundle\EguliasListenersDebugCommandBundle(),
+      // ...
+      );
+  }
+```
+
+##Symfony 2.0.x
 Add to your `/deps` file :
 
 ```
 [EguliasListnersDebugCommandBundle]
     git=git@github.com:egulias/ListenersDebugCommandBundle.git
     target=/bundles/Egulias/ListenersDebugCommandBundle
+    version=symfony2.0.x
 ```
-  * Side note: remember to add the `version=` tag if you need a particular version
     
 And make a `php bin/vendors install`.
 
