@@ -53,7 +53,7 @@ Add to your composer.json
 
 Use composer to download the new requirement
 ``` 
-$ php composer.phar update friendsofsymfony/user-bundle
+$ php composer.phar update egulias/listeners-debug-command-bundle
 ```
 
 ## Add ListenersDebugCommandBundle to your application kernel
