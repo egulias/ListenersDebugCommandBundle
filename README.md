@@ -17,16 +17,21 @@ The command is:
 
 ## Available options
 
-There are 2 available options:
+There are 4 available options:
 
 * --show-private :    if issued will show also private services
 * --event=event.name: if issued will filter to show only the listeners listening to the given name 
+* --listeners:        if issued will filter to show only the listeners (only available for Symfony 2.1.x)
+* --subscribers:      if issued will filter to show only the subscribers (only available for Symfony 2.1.x)
 
 ## Sample output (Symfony 2.1.x)
 
 * Output for `container:debug:listeners`                          [Here](https://gist.github.com/3132219)
 * Output for `container:debug:listeners --event=kernel.response`  [Here](https://gist.github.com/3132227)
 * Output for `container:debug:listeners listener.id`              [Here](https://gist.github.com/3132499)
+* Output for `container:debug:listeners --listeners`              [Here](https://gist.github.com/3160841)
+* Output for `container:debug:listeners --subscribers`            [Here](https://gist.github.com/3160836)
+
 
 ## Sample output (Symfony 2.0.x)
 
