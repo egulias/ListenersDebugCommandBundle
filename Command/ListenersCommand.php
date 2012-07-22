@@ -45,7 +45,7 @@ class ListenersCommand extends ContainerDebugCommand
                 array(
                   new InputArgument('name', InputArgument::OPTIONAL, 'A (service) listener name (foo)  or search (foo*)'),
                   new InputOption('event', null,  InputOption::VALUE_REQUIRED, 'Provide an event name (foo.bar) to filter'),
-                  new InputOption('susbcribers', null, InputOption::VALUE_NONE, 'Use to show *only* event subscribers'),
+                  new InputOption('subscribers', null, InputOption::VALUE_NONE, 'Use to show *only* event subscribers'),
                   new InputOption('listeners', null, InputOption::VALUE_NONE, 'Use to show *only* event listeners'),
                   new InputOption('show-private', null, InputOption::VALUE_NONE, 'Use to show public *and* private services listeners'),
                 )
@@ -73,7 +73,10 @@ EOF
 
         $options = array(
             'show-private' => $input->getOption('show-private'),
-            'event'        => $input->getOption('event')
+            'event'        => $input->getOption('event'),
+            'show-listeners' => $input->getOption('listeners'),
+            'show-subscribers' => $input->getOption('subscribers'),
+
         );
 
         // sort so that it reads like an index of services
@@ -82,7 +85,7 @@ EOF
         if ($name) {
             $this->outputListener($output, $name, $options);
         } else {
-            $this->outputListeners($output, $listenersIds, $options );
+            $this->outputListeners($output, $listenersIds, $options);
         }
     }
 
@@ -136,6 +139,9 @@ EOF
     {
         $showPrivate = $options['show-private'];
         $filterEvent = $options['event'];
+        $showListeners = $options['show-listeners'];
+        $showSubscribers = $options['show-subscribers'];
+
         // set the label to specify public or public+private
         if ($showPrivate) {
             $label = '<comment>Public</comment> and <comment>private</comment> (services) listeners';
@@ -188,6 +194,9 @@ EOF
                 foreach ($this->listeners[$serviceId]['tag'] as $listener) {
                     //this is probably an EventSubscriber
                     if (!isset($listener['event'])) {
+                        if ($showListeners) {
+                            continue;
+                        }
                         $events = $this->getEventSubscriberInformation($definition->getClass());
                         foreach ($events as $name => $event) {
                             if ($name == $filterEvent || !$filterEvent) {
@@ -196,8 +205,7 @@ EOF
                                 );
                             }
                         }
-
-                    } else if ($listener['event'] == $filterEvent || !$filterEvent) {
+                    } else if ($listener['event'] == $filterEvent || !$filterEvent && !$showSubscribers) {
                         $output->writeln(
                             sprintf($format, $serviceId, $listener['event'], 'listener', $definition->getClass())
                         );
