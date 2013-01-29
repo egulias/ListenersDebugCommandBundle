@@ -245,12 +245,15 @@ EOF
             $tags = $definition->getTags();
             foreach ($tags as $tag => $details) {
                 if (preg_match(self::SUBSCRIBER_PATTERN, $tag)) {
-                    $events = $this->getEventSubscriberInformation($definition->getClass());
+                    $events = $this->getEventSubscriberInformation($definition->getClass());                    
                     foreach ($events as $name => $current) {
                         //Exception when event only has the method name
                         if (!is_array($current)) {
                             $current = array($current);
+                        } else if (is_array($current[0])) {
+                            $current = $current[0];
                         }
+                        
                         $output->writeln(sprintf('<comment>  -Event</comment>         %s', $name));
                         $output->writeln(sprintf('<comment>  -Method</comment>        %s', $current[0]));
                         $priority = (isset($current[1])) ? $current[1] : 0;
