@@ -1,24 +1,25 @@
 {
-   "name":         "egulias/listeners-debug-command-bundle",
-   "description":  "Symfony 2 console command to debug listeners",
-   "homepage":     "https://github.com/egulias/ListenersDebugCommandBundle.git",
-   "type":         "symfony-bundle",
-   "license":      "MIT",
-   "authors":      [
-            {
-                       "name":     "Eduardo Gulias Davis",
-                       "homepage": "http://egulias.com"
-                   }
-      ],
-   "require":      {
-          "php":              ">=5.3.3",
-          "symfony/symfony":  ">=2.0"
+  "name":         "egulias/listeners-debug-command-bundle",
+  "description":  "Symfony 2 console command to debug listeners",
+  "homepage":     "https://github.com/egulias/ListenersDebugCommandBundle.git",
+  "type":         "symfony-bundle",
+  "keywords":     "listener, eventa",
+  "license":      "MIT",
+  "authors":      [
+  {
+    "name":     "Eduardo Gulias Davis",
+    "homepage": "http://egulias.com"
+  }
+  ],
+    "require":      {
+      "php":              ">=5.3.3",
+      "symfony/symfony":  ">=2.0"
 
-      },
-   "autoload":     {
-          "psr-0": { "Egulias\\ListenersDebugCommandBundle": "" }
-      },
-   "target-dir": "Egulias/ListenersDebugCommandBundle"
+    },
+    "autoload":     {
+      "psr-0": { "Egulias\\ListenersDebugCommandBundle": "" }
+    },
+    "target-dir": "Egulias/ListenersDebugCommandBundle"
 }
 
 
