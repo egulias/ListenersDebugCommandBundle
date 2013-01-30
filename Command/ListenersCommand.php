@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerDebugCommand;
 
-
 /**
  * ListenersCommand
  *
@@ -40,25 +39,36 @@ class ListenersCommand extends ContainerDebugCommand
      */
     protected function configure()
     {
-        $this
-            ->setDefinition(
-                array(
-                  new InputArgument('name', InputArgument::OPTIONAL, 'A (service) listener name (foo)  or search (foo*)'),
-                  new InputOption('event', null,  InputOption::VALUE_REQUIRED, 'Provide an event name (foo.bar) to filter'),
-                  new InputOption('subscribers', null, InputOption::VALUE_NONE, 'Use to show *only* event subscribers'),
-                  new InputOption('listeners', null, InputOption::VALUE_NONE, 'Use to show *only* event listeners'),
-                  new InputOption('show-private', null, InputOption::VALUE_NONE, 'Use to show public *and* private services listeners'),
-                )
+        $this->setDefinition(
+            array(
+                new InputArgument('name', InputArgument::OPTIONAL, 'A (service) listener name (foo)  or search (foo*)'),
+                new InputOption(
+                    'event',
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Provide an event name (foo.bar) to filter'
+                ),
+                new InputOption('subscribers', null, InputOption::VALUE_NONE, 'Use to show *only* event subscribers'),
+                new InputOption('listeners', null, InputOption::VALUE_NONE, 'Use to show *only* event listeners'),
+                new InputOption(
+                    'show-private',
+                    null,
+                    InputOption::VALUE_NONE,
+                    'Use to show public *and* private services listeners'
+                ),
             )
-            ->setName('container:debug:listeners')
-            ->setDescription('Displays current services defined as listeners for an application')
-            ->setHelp(<<<EOF
-The <info>container:debug:listeners</info> command displays all configured <comment>public</comment> services definded as listeners:
+        )
+        ->setName('container:debug:listeners')
+        ->setDescription('Displays current services defined as listeners for an application')
+        ->setHelp(
+            <<<EOF
+The <info>container:debug:listeners</info> command displays all configured <comment>public</comment>
+services definded as listeners:
 
   <info>container:debug:listeners</info>
 
 EOF
-            );
+        );
     }
 
     /**
@@ -205,7 +215,7 @@ EOF
                                 );
                             }
                         }
-                    } else if ($listener['event'] == $filterEvent || !$filterEvent && !$showSubscribers) {
+                    } elseif ($listener['event'] == $filterEvent || !$filterEvent && !$showSubscribers) {
                         $output->writeln(
                             sprintf($format, $serviceId, $listener['event'], 'listener', $definition->getClass())
                         );
@@ -214,7 +224,15 @@ EOF
             } elseif ($definition instanceof Alias) {
                 $alias = $definition;
                 $output->writeln(
-                    sprintf($format, $serviceId, 'n/a', sprintf('<comment>alias for</comment> <info>%s</info>', (string) $alias))
+                    sprintf(
+                        $format,
+                        $serviceId,
+                        'n/a',
+                        sprintf(
+                            '<comment>alias for</comment> <info>%s</info>',
+                            (string) $alias
+                        )
+                    )
                 );
             } else {
                 // we have no information (happens with "service_container")
@@ -245,22 +263,27 @@ EOF
             $tags = $definition->getTags();
             foreach ($tags as $tag => $details) {
                 if (preg_match(self::SUBSCRIBER_PATTERN, $tag)) {
-                    $events = $this->getEventSubscriberInformation($definition->getClass());                    
+                    $events = $this->getEventSubscriberInformation($definition->getClass());
                     foreach ($events as $name => $current) {
                         //Exception when event only has the method name
                         if (!is_array($current)) {
                             $current = array($current);
-                        } else if (is_array($current[0])) {
+                        } elseif (is_array($current[0])) {
                             $current = $current[0];
                         }
-                        
+
                         $output->writeln(sprintf('<comment>  -Event</comment>         %s', $name));
                         $output->writeln(sprintf('<comment>  -Method</comment>        %s', $current[0]));
                         $priority = (isset($current[1])) ? $current[1] : 0;
                         $output->writeln(sprintf('<comment>  -Priority</comment>      %s', $priority));
-                        $output->writeln(sprintf('<comment>  -----------------------------------------</comment>', $priority));
+                        $output->writeln(
+                            sprintf(
+                                '<comment>  -----------------------------------------</comment>',
+                                $priority
+                            )
+                        );
                     }
-                } else if (preg_match(self::LISTENER_PATTERN, $tag)) {
+                } elseif (preg_match(self::LISTENER_PATTERN, $tag)) {
                     foreach ($details as $current) {
                         $output->writeln(sprintf('<comment>  -Event</comment>         %s', $current['event']));
                         $output->writeln(sprintf('<comment>  -Method</comment>        %s', $current['method']));
