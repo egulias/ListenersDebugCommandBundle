@@ -3,7 +3,7 @@
   "description":  "Symfony 2 console command to debug listeners",
   "homepage":     "https://github.com/egulias/ListenersDebugCommandBundle.git",
   "type":         "symfony-bundle",
-  "keywords":     "listener, eventa",
+  "keywords":     ["listener events"],
   "license":      "MIT",
   "authors":      [
   {
