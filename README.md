@@ -6,6 +6,13 @@ tagged with .event_listener
 
 ## IMPORTANT
 
+### Symfony 2.2.X
+
+If you are using this from Symfony <= 2.2, please update your composer.json file to use version=1.4.1 which is the current
+stable branch for Symfony 2.2.x
+
+### Symfony 2.0.X
+
 If you are using this from Symfony 2.0.x, please update your deps file to use version=symfony2.0.x which is the current
 stable branch for Symfony 2.0.x
 
@@ -21,10 +28,17 @@ There are 4 available options:
 
 * --show-private :    if issued will show also private services
 * --event=event.name: if issued will filter to show only the listeners listening to the given name 
-* --listeners:        if issued will filter to show only the listeners (only available for Symfony 2.1.x)
-* --subscribers:      if issued will filter to show only the subscribers (only available for Symfony 2.1.x)
+* --listeners:        if issued will filter to show only the listeners (only available since Symfony 2.1.x)
+* --subscribers:      if issued will filter to show only the subscribers (only available since Symfony 2.1.x)
 
-## Sample output (Symfony 2.1.x)
+## Sample output (Symfony >= 2.3)
+* Output for `container:debug:listeners`                          [Here](https://gist.github.com/egulias/5862768)
+* Output for `container:debug:listeners --event=kernel.response`  [Here](https://gist.github.com/egulias/5862796)
+* Output for `container:debug:listeners listener.id`              [Here](https://gist.github.com/egulias/3132499)
+* Output for `container:debug:listeners --listeners`              [Here](https://gist.github.com/egulias/5862815)
+* Output for `container:debug:listeners --subscribers`            [Here](https://gist.github.com/egulias/5862829)
+
+## Sample output (Symfony >= 2.1.x <= 2.2.x)
 
 * Output for `container:debug:listeners`                          [Here](https://gist.github.com/3132219)
 * Output for `container:debug:listeners --event=kernel.response`  [Here](https://gist.github.com/3132227)
@@ -43,15 +57,25 @@ There are 4 available options:
 # Installation and configuration
 
 ## Get the bundle
-
-##Symfony 2.1.x
-
 Add to your composer.json
+
+##Symfony >= 2.3
+
 
 ```
 {
     "require": {
-        "egulias/listeners-debug-command-bundle": "*"
+        "egulias/listeners-debug-command-bundle": "1.5.0"
+    }
+}
+```
+
+##Symfony >= 2.2
+
+```
+{
+    "require": {
+        "egulias/listeners-debug-command-bundle": "symfony2.2"
     }
 }
 ```
@@ -101,7 +125,7 @@ And make a `php bin/vendors install`.
       ));
 ```
 
-## Add ListenersDebugCommandBundle to your application kernel
+## Add ListenersDebugCommandBundle to your application kernel 
 
 ``` php
 <?php
