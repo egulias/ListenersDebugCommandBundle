@@ -143,7 +143,6 @@ EOF
      * @param array           $listenersIds array of listeners ids
      * @param array           $options      array of options from the console
      *
-     * @return void
      */
     protected function outputListeners(OutputInterface $output, $listenersIds, $options = array())
     {
@@ -153,52 +152,22 @@ EOF
         $showSubscribers = $options['show-subscribers'];
 
         // set the label to specify public or public+private
+        $label = '<comment>Public</comment> (services) listeners';
         if ($showPrivate) {
             $label = '<comment>Public</comment> and <comment>private</comment> (services) listeners';
-        } else {
-            $label = '<comment>Public</comment> (services) listeners';
         }
 
         $output->writeln($this->getHelper('formatter')->formatSection('container', $label));
 
-        // loop through to get space needed and filter private services
-        $maxName = 4;
-        $maxScope = 30;
-        foreach ($listenersIds as $key => $serviceId) {
-            $definition = $this->resolveServiceDefinition($serviceId);
-
-            if ($definition instanceof Definition) {
-                // filter out private services unless shown explicitly
-                if (!$showPrivate && !$definition->isPublic()) {
-                    unset($listenersIds[$key]);
-                    continue;
-                }
-
-                if (strlen($definition->getScope()) > $maxScope) {
-                    $maxScope = strlen($definition->getScope());
-                }
-            }
-
-            if (strlen($serviceId) > $maxName) {
-                $maxName = strlen($serviceId);
-            }
-        }
-        $format  = '%-'.$maxName.'s %-'.$maxScope.'s %-12s %s ';
-
-        // the title field needs extra space to make up for comment tags
-        $format1  = '%-'.($maxName + 19).'s %-'.($maxScope + 19).'s %8s %s';
-        $output->writeln(
-            sprintf(
-                $format1,
-                '<comment>Name</comment>',
-                '<comment>Event</comment>',
-                '<comment>Type        </comment>',
-                '<comment>Class Name</comment>'
-            )
-        );
+        $listenersList = array();
+        $table = $this->getHelperSet()->get('table');
+        $table->setHeaders(array('Name', 'Event', 'Type', 'Class Name'));
 
         foreach ($listenersIds as $serviceId) {
             $definition = $this->resolveServiceDefinition($serviceId);
+            if (!$showPrivate && !$definition->isPublic()) {
+                continue;
+            }
 
             if ($definition instanceof Definition) {
                 foreach ($this->listeners[$serviceId]['tag'] as $listener) {
@@ -210,36 +179,26 @@ EOF
                         $events = $this->getEventSubscriberInformation($definition->getClass());
                         foreach ($events as $name => $event) {
                             if ($name == $filterEvent || !$filterEvent) {
-                                $output->writeln(
-                                    sprintf($format, $serviceId, $name, 'subscriber', $definition->getClass())
-                                );
+                                $listenersList[] = array($serviceId, $name, 'subscriber', $definition->getClass());
                             }
                         }
                     } elseif ($listener['event'] == $filterEvent || !$filterEvent && !$showSubscribers) {
-                        $output->writeln(
-                            sprintf($format, $serviceId, $listener['event'], 'listener', $definition->getClass())
-                        );
+                        $listenersList[] = array($serviceId, $listener['event'], 'listener', $definition->getClass());
                     }
                 }
             } elseif ($definition instanceof Alias) {
-                $alias = $definition;
-                $output->writeln(
-                    sprintf(
-                        $format,
-                        $serviceId,
-                        'n/a',
-                        sprintf(
-                            '<comment>alias for</comment> <info>%s</info>',
-                            (string) $alias
-                        )
-                    )
+                $listenersList[] = array(
+                    $serviceId,
+                    'n/a',
+                    sprintf('<comment>alias for</comment> <info>%s</info>', (string) $definition),
+                    $definition->getClass()
                 );
-            } else {
-                // we have no information (happens with "service_container")
-                $service = $definition;
-                $output->writeln(sprintf($format, $serviceId, '', get_class($service)));
             }
         }
+
+        $table->setCellRowFormat('<fg=white>%s</fg=white>');
+        $table->setRows($listenersList);
+        $table->render($output);
     }
 
     /**
