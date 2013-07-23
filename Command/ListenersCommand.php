@@ -161,7 +161,7 @@ EOF
 
         $listenersList = array();
         $table = $this->getHelperSet()->get('table');
-        $table->setHeaders(array('Name', 'Event', 'Type', 'Class Name'));
+        $table->setHeaders(array('Name', 'Event', 'Priority', 'Type', 'Class Name'));
 
         foreach ($listenersIds as $serviceId) {
             $definition = $this->resolveServiceDefinition($serviceId);
@@ -173,18 +173,25 @@ EOF
                 foreach ($this->listeners[$serviceId]['tag'] as $listener) {
                     //this is probably an EventSubscriber
                     if (!isset($listener['event'])) {
-                        if ($showListeners) {
-                            continue;
-                        }
                         $events = $this->getEventSubscriberInformation($definition->getClass());
                         foreach ($events as $name => $event) {
-                            if ($name == $filterEvent || !$filterEvent) {
-                                $listenersList[] = array($serviceId, $name, 'subscriber', $definition->getClass());
-                            }
+                            $listenersList[] = array(
+                                $serviceId,
+                                $name,
+                                (isset($event[1]) && !is_string($event[1])) ? $event[1] : 0,
+                                'subscriber',
+                                $definition->getClass()
+                            );
                         }
-                    } elseif ($listener['event'] == $filterEvent || !$filterEvent && !$showSubscribers) {
-                        $listenersList[] = array($serviceId, $listener['event'], 'listener', $definition->getClass());
+                        continue;
                     }
+                    $listenersList[] = array(
+                        $serviceId,
+                        $listener['event'],
+                        (isset($listener['priority'])) ? $listener['priority'] : 0,
+                        'listener',
+                        $definition->getClass()
+                    );
                 }
             } elseif ($definition instanceof Alias) {
                 $listenersList[] = array(
@@ -195,6 +202,40 @@ EOF
                 );
             }
         }
+
+        if ($filterEvent) {
+            $listenersList = array_filter(
+                $listenersList,
+                function ($listener) use ($filterEvent) {
+                    return $listener[1] === $filterEvent;
+                }
+            );
+            usort(
+                $listenersList,
+                function ($a, $b) {
+                    return ($a[2] <= $b[2]) ? 1 : -1;
+                }
+            );
+        }
+
+        if ($showListeners) {
+            $listenersList = array_filter(
+                $listenersList,
+                function ($listener) {
+                    return $listener[3] === 'listener';
+                }
+            );
+        }
+
+        if ($showSubscribers) {
+            $listenersList = array_filter(
+                $listenersList,
+                function ($listener) {
+                    return $listener[3] === 'subscriber';
+                }
+            );
+        }
+
 
         $table->setCellRowFormat('<fg=white>%s</fg=white>');
         $table->setRows($listenersList);
