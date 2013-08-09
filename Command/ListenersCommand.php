@@ -48,6 +48,13 @@ class ListenersCommand extends ContainerDebugCommand
                     InputOption::VALUE_REQUIRED,
                     'Provide an event name (foo.bar) to filter'
                 ),
+                new InputOption(
+                    'order-desc',
+                    null,
+                    InputOption::VALUE_NONE,
+                    'Order listeners by descending priority (default\'s ascending) - ' .
+                    '(Only applies when used with --event option)'
+                ),
                 new InputOption('subscribers', null, InputOption::VALUE_NONE, 'Use to show *only* event subscribers'),
                 new InputOption('listeners', null, InputOption::VALUE_NONE, 'Use to show *only* event listeners'),
                 new InputOption(
@@ -84,9 +91,9 @@ EOF
         $options = array(
             'show-private' => $input->getOption('show-private'),
             'event'        => $input->getOption('event'),
+            'order-desc'        => $input->getOption('order-desc'),
             'show-listeners' => $input->getOption('listeners'),
             'show-subscribers' => $input->getOption('subscribers'),
-
         );
 
         // sort so that it reads like an index of services
@@ -113,7 +120,7 @@ EOF
             return $listenersIds;
         }
 
-        $definition = $this->containerBuilder->getDefinition('event_dispatcher');
+        //$definition = $this->containerBuilder->getDefinition('event_dispatcher');
         $dfs = $this->containerBuilder->getDefinitions();
 
         foreach ($dfs as $k => $v) {
@@ -161,7 +168,6 @@ EOF
 
         $listenersList = array();
         $table = $this->getHelperSet()->get('table');
-        $table->setHeaders(array('Name', 'Event', 'Priority', 'Type', 'Class Name'));
 
         foreach ($listenersIds as $serviceId) {
             $definition = $this->resolveServiceDefinition($serviceId);
@@ -210,9 +216,13 @@ EOF
                     return $listener[1] === $filterEvent;
                 }
             );
+            $order = $options['order-desc'];
             usort(
                 $listenersList,
-                function ($a, $b) {
+                function ($a, $b) use ($order) {
+                    if ($order) {
+                        return ($a[2] >= $b[2]) ? 1 : -1;
+                    }
                     return ($a[2] <= $b[2]) ? 1 : -1;
                 }
             );
@@ -237,6 +247,7 @@ EOF
         }
 
 
+        $table->setHeaders(array('Name', 'Event', 'Priority', 'Type', 'Class Name'));
         $table->setCellRowFormat('<fg=white>%s</fg=white>');
         $table->setRows($listenersList);
         $table->render($output);
