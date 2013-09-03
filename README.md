@@ -1,7 +1,7 @@
 # Listeners debug Command for Symfony2 console
 
-This bundle provides a simple command `container:debug:listeners` to allow to easyly debug listeners by
-provinding useful information about those defined in the app. It will fetch information about all the listeners 
+This bundle provides a simple command `container:debug:listeners` to allow to easily debug listeners by
+providing useful information about those defined in the app. It will fetch information about all the listeners
 tagged with .event_listener
 
 ## IMPORTANT
@@ -18,7 +18,7 @@ stable branch for Symfony 2.0.x
 
 # Usage
 
-As for any command you should use: `app/console` from your proyect root.
+As for any command you should use: `app/console` from your project root.
 The command is:
 `app/console container:debug:listeners`
 
@@ -107,7 +107,7 @@ $ php composer.phar update egulias/listeners-debug-command-bundle
 Add to your `/deps` file :
 
 ```
-[EguliasListnersDebugCommandBundle]
+[EguliasListenersDebugCommandBundle]
     git=git@github.com:egulias/ListenersDebugCommandBundle.git
     target=/bundles/Egulias/ListenersDebugCommandBundle
     version=symfony2.0.x
