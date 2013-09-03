@@ -41,7 +41,7 @@ class ListenersCommand extends ContainerDebugCommand
     {
         $this->setDefinition(
             array(
-                new InputArgument('name', InputArgument::OPTIONAL, 'A (service) listener name (foo)  or search (foo*)'),
+                new InputArgument('name', InputArgument::OPTIONAL, 'A (service) listener name (foo) or search (foo*)'),
                 new InputOption(
                     'event',
                     null,
@@ -70,7 +70,7 @@ class ListenersCommand extends ContainerDebugCommand
         ->setHelp(
             <<<EOF
 The <info>container:debug:listeners</info> command displays all configured <comment>public</comment>
-services definded as listeners:
+services defined as listeners:
 
   <info>container:debug:listeners</info>
 
@@ -125,7 +125,7 @@ EOF
 
         foreach ($dfs as $k => $v) {
             $tags = $v->getTags();
-            if (count($tags) <= 0) {
+            if (empty($tags)) {
                 continue;
             }
             $keys = array_keys($tags);
@@ -246,7 +246,6 @@ EOF
             );
         }
 
-
         $table->setHeaders(array('Name', 'Event', 'Priority', 'Type', 'Class Name'));
         $table->setCellRowFormat('<fg=white>%s</fg=white>');
         $table->setRows($listenersList);
@@ -298,7 +297,7 @@ EOF
                     foreach ($details as $current) {
                         $output->writeln(sprintf('<comment>  -Event</comment>         %s', $current['event']));
                         $output->writeln(sprintf('<comment>  -Method</comment>        %s', $current['method']));
-                        $priority = (isset($current['priority'])) ? $current['priority'] : 0;
+                        $priority = isset($current['priority']) ? $current['priority'] : 0;
                         $output->writeln(sprintf('<comment>  -Priority</comment>      %s', $priority));
                     }
 
@@ -334,8 +333,7 @@ EOF
         $interfaces = $reflectionClass->getInterfaceNames();
         foreach ($interfaces as $interface) {
             if ($interface == 'Symfony\\Component\\EventDispatcher\\EventSubscriberInterface') {
-                $events = $class::getSubscribedEvents();
-                break;
+                return $class::getSubscribedEvents();
             }
         }
 
@@ -351,16 +349,14 @@ EOF
      */
     public function classIsEventSubscriber($class)
     {
-        $isSubscriber = false;
         $reflectionClass = new \ReflectionClass($class);
         $interfaces = $reflectionClass->getInterfaceNames();
         foreach ($interfaces as $interface) {
             if ($interface == 'Symfony\\Component\\EventDispatcher\\EventSubscriberInterface') {
-                $isSubscriber = true;
-                break;
+                return true;
             }
         }
 
-        return $isSubscriber;
+        return false;
     }
 }
