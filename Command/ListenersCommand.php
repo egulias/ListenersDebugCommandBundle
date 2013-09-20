@@ -295,8 +295,9 @@ EOF
                     }
                 } elseif (preg_match(self::LISTENER_PATTERN, $tag)) {
                     foreach ($details as $current) {
+                        $method = (isset($current['method'])) ? $current['method'] : $current['event'];
                         $output->writeln(sprintf('<comment>  -Event</comment>         %s', $current['event']));
-                        $output->writeln(sprintf('<comment>  -Method</comment>        %s', $current['method']));
+                        $output->writeln(sprintf('<comment>  -Method</comment>        %s', $method));
                         $priority = isset($current['priority']) ? $current['priority'] : 0;
                         $output->writeln(sprintf('<comment>  -Priority</comment>      %s', $priority));
                     }
