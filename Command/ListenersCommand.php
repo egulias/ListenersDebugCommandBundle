@@ -181,10 +181,14 @@ EOF
                     if (!isset($listener['event'])) {
                         $events = $this->getEventSubscriberInformation($definition->getClass());
                         foreach ($events as $name => $event) {
+                            $priority = 0;
+                            if (is_array($event) && isset($event[1]) && is_int($event[1])) {
+                                $priority = $event[1];
+                            }
                             $listenersList[] = array(
                                 $serviceId,
                                 $name,
-                                (isset($event[1]) && !is_string($event[1])) ? $event[1] : 0,
+                                $priority,
                                 'subscriber',
                                 $definition->getClass()
                             );
