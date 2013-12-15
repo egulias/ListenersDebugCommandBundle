@@ -116,14 +116,13 @@ EOF
     protected function getListenersIds()
     {
         $listenersIds = array();
-        if (!$this->containerBuilder->hasDefinition('event_dispatcher')) {
+        if (!$this->hasEventDispatcher()) {
             return $listenersIds;
         }
 
-        //$definition = $this->containerBuilder->getDefinition('event_dispatcher');
         $dfs = $this->containerBuilder->getDefinitions();
 
-        foreach ($dfs as $k => $v) {
+        foreach ($dfs as $v) {
             $tags = $v->getTags();
             if (empty($tags)) {
                 continue;
@@ -170,7 +169,7 @@ EOF
         $table = $this->getHelperSet()->get('table');
 
         foreach ($listenersIds as $serviceId) {
-            $definition = $this->resolveServiceDefinition($serviceId);
+            $definition = $this->resolveServiceDef($this->containerBuilder, $serviceId);
             if (!$showPrivate && !$definition->isPublic()) {
                 continue;
             }
@@ -261,7 +260,7 @@ EOF
      */
     protected function outputListener(OutputInterface $output, $serviceId)
     {
-        $definition = $this->resolveServiceDefinition($serviceId);
+        $definition = $this->resolveServiceDef($this->containerBuilder, $serviceId);
 
         $label = sprintf('Information for listener <info>%s</info>', $serviceId);
         $output->writeln($this->getHelper('formatter')->formatSection('container', $label));
@@ -363,5 +362,37 @@ EOF
         }
 
         return false;
+    }
+
+    /**
+     * @param ContainerBuilder $builder
+     * @param string           $serviceId
+     *
+     * @return mixed
+     */
+    protected function resolveServiceDef(ContainerBuilder $builder, $serviceId)
+    {
+        if ($builder->hasDefinition($serviceId)) {
+            return $builder->getDefinition($serviceId);
+        }
+
+        // Some service IDs don't have a Definition, they're simply an Alias
+        if ($builder->hasAlias($serviceId)) {
+            return $builder->getAlias($serviceId);
+        }
+
+        // the service has been injected in some special way, just return the service
+        return $builder->get($serviceId);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasEventDispatcher()
+    {
+        return (
+            $this->containerBuilder->hasDefinition('debug.event_dispatcher') ||
+            $this->containerBuilder->hasDefinition('event_dispatcher')
+        );
     }
 }
