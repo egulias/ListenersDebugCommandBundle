@@ -181,12 +181,34 @@ EOF
                         $events = $this->getEventSubscriberInformation($definition->getClass());
                         foreach ($events as $name => $event) {
                             $priority = 0;
+                            if (is_array($event) && is_array($event[0])) {
+                                foreach ($event as $property) {
+                                    $priority = 0;
+                                    $method = $property;
+                                    if (is_array($property) && isset($property[1]) && is_int($property[1])) {
+                                        $priority = $property[1];
+                                        $method = $property[0];
+                                    }
+
+                                    $listenersList[] = array(
+                                        $serviceId,
+                                        $name,
+                                        $method,
+                                        $priority,
+                                        'subscriber',
+                                        $definition->getClass()
+                                    );
+                                }
+                                continue;
+                            }
+
                             if (is_array($event) && isset($event[1]) && is_int($event[1])) {
                                 $priority = $event[1];
                             }
                             $listenersList[] = array(
                                 $serviceId,
                                 $name,
+                                $event[0],
                                 $priority,
                                 'subscriber',
                                 $definition->getClass()
@@ -197,6 +219,7 @@ EOF
                     $listenersList[] = array(
                         $serviceId,
                         $listener['event'],
+                        '',
                         (isset($listener['priority'])) ? $listener['priority'] : 0,
                         'listener',
                         $definition->getClass()
@@ -206,6 +229,7 @@ EOF
                 $listenersList[] = array(
                     $serviceId,
                     'n/a',
+                    '',
                     sprintf('<comment>alias for</comment> <info>%s</info>', (string) $definition),
                     $definition->getClass()
                 );
@@ -224,9 +248,9 @@ EOF
                 $listenersList,
                 function ($a, $b) use ($order) {
                     if ($order) {
-                        return ($a[2] >= $b[2]) ? 1 : -1;
+                        return ($a[3] >= $b[3]) ? 1 : -1;
                     }
-                    return ($a[2] <= $b[2]) ? 1 : -1;
+                    return ($a[3] <= $b[3]) ? 1 : -1;
                 }
             );
         }
@@ -235,7 +259,7 @@ EOF
             $listenersList = array_filter(
                 $listenersList,
                 function ($listener) {
-                    return $listener[3] === 'listener';
+                    return $listener[4] === 'listener';
                 }
             );
         }
@@ -244,12 +268,12 @@ EOF
             $listenersList = array_filter(
                 $listenersList,
                 function ($listener) {
-                    return $listener[3] === 'subscriber';
+                    return $listener[4] === 'subscriber';
                 }
             );
         }
 
-        $table->setHeaders(array('Name', 'Event', 'Priority', 'Type', 'Class Name'));
+        $table->setHeaders(array('Name', 'Event', 'Method', 'Priority', 'Type', 'Class Name'));
         $table->setCellRowFormat('<fg=white>%s</fg=white>');
         $table->setRows($listenersList);
         $table->render($output);
