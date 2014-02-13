@@ -182,16 +182,18 @@ EOF
                         foreach ($events as $name => $event) {
                             $priority = 0;
                             if (is_array($event) && is_array($event[0])) {
-                                foreach ($event as $_event) {
+                                foreach ($event as $property) {
                                     $priority = 0;
-                                    if (is_array($_event) && isset($_event[1]) && is_int($_event[1])) {
-                                        $priority = $_event[1];
+                                    $method = $property;
+                                    if (is_array($property) && isset($property[1]) && is_int($property[1])) {
+                                        $priority = $property[1];
+                                        $method = $property[0];
                                     }
 
                                     $listenersList[] = array(
                                         $serviceId,
                                         $name,
-                                        $_event[0],
+                                        $method,
                                         $priority,
                                         'subscriber',
                                         $definition->getClass()
