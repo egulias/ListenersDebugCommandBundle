@@ -184,10 +184,9 @@ EOF
                             if (is_array($event) && is_array($event[0])) {
                                 foreach ($event as $property) {
                                     $priority = 0;
-                                    $method = $property;
+                                    $method = $property[0];
                                     if (is_array($property) && isset($property[1]) && is_int($property[1])) {
                                         $priority = $property[1];
-                                        $method = $property[0];
                                     }
 
                                     $listenersList[] = array(
@@ -204,6 +203,10 @@ EOF
 
                             if (is_array($event) && isset($event[1]) && is_int($event[1])) {
                                 $priority = $event[1];
+                            }
+
+                            if (!is_array($event)) {
+                                $event = array($event);
                             }
                             $listenersList[] = array(
                                 $serviceId,
@@ -229,7 +232,7 @@ EOF
                 $listenersList[] = array(
                     $serviceId,
                     'n/a',
-                    '',
+                    0,
                     sprintf('<comment>alias for</comment> <info>%s</info>', (string) $definition),
                     $definition->getClass()
                 );
