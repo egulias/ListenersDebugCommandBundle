@@ -2,6 +2,11 @@
 
 namespace Egulias\ListenersDebugCommandBundle\Listener;
 
+/**
+ * ListenerFilter
+ *
+ * @author Eduardo Gulias Davis <me@egulias.com>
+ */
 class ListenerFilter
 {
     public function filterByEvent($event, $listeners, $order = false)
@@ -47,5 +52,4 @@ class ListenerFilter
             }
         );
     }
-
-} 
+}

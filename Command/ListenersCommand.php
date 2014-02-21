@@ -107,42 +107,6 @@ EOF
     }
 
     /**
-     * getListenersIds
-     *
-     * Searches for any number of defined listeners under the tag "*.event_listener" or "*.event_subscriber"
-     *
-     * @return array listeners ids
-     */
-    protected function getListenersIds()
-    {
-        $listenersIds = array();
-        if (!$this->hasEventDispatcher()) {
-            return $listenersIds;
-        }
-
-        $dfs = $this->containerBuilder->getDefinitions();
-
-        foreach ($dfs as $v) {
-            $tags = $v->getTags();
-            if (empty($tags)) {
-                continue;
-            }
-            $keys = array_keys($tags);
-            if (preg_match(self::LISTENER_PATTERN, $keys[0]) || preg_match(self::SUBSCRIBER_PATTERN, $keys[0])) {
-                $fullTags[$keys[0]] = $keys[0];
-            }
-        }
-        foreach ($fullTags as $tag) {
-            $services = $this->containerBuilder->findTaggedServiceIds($tag);
-            foreach ($services as $id => $events) {
-                $this->listeners[$id]['tag'] = $events;
-                $listenersIds[$id] = $id;
-            }
-        }
-        return $listenersIds;
-    }
-
-    /**
      * outputListeners
      *
      * @param OutputInterface $output       Output
@@ -168,113 +132,6 @@ EOF
         $listenersList = array();
         $table = $this->getHelperSet()->get('table');
 
-        foreach ($listenersIds as $serviceId) {
-            $definition = $this->resolveServiceDef($this->containerBuilder, $serviceId);
-            if (!$showPrivate && !$definition->isPublic()) {
-                continue;
-            }
-
-            if ($definition instanceof Definition) {
-                foreach ($this->listeners[$serviceId]['tag'] as $listener) {
-                    //this is probably an EventSubscriber
-                    if (!isset($listener['event'])) {
-                        $events = $this->getEventSubscriberInformation($definition->getClass());
-                        foreach ($events as $name => $event) {
-                            $priority = 0;
-                            if (is_array($event) && is_array($event[0])) {
-                                foreach ($event as $property) {
-                                    $priority = 0;
-                                    $method = $property[0];
-                                    if (is_array($property) && isset($property[1]) && is_int($property[1])) {
-                                        $priority = $property[1];
-                                    }
-
-                                    $listenersList[] = array(
-                                        $serviceId,
-                                        $name,
-                                        $method,
-                                        $priority,
-                                        'subscriber',
-                                        $definition->getClass()
-                                    );
-                                }
-                                continue;
-                            }
-
-                            if (is_array($event) && isset($event[1]) && is_int($event[1])) {
-                                $priority = $event[1];
-                            }
-
-                            if (!is_array($event)) {
-                                $event = array($event);
-                            }
-                            $listenersList[] = array(
-                                $serviceId,
-                                $name,
-                                $event[0],
-                                $priority,
-                                'subscriber',
-                                $definition->getClass()
-                            );
-                        }
-                        continue;
-                    }
-                    $listenersList[] = array(
-                        $serviceId,
-                        $listener['event'],
-                        '',
-                        (isset($listener['priority'])) ? $listener['priority'] : 0,
-                        'listener',
-                        $definition->getClass()
-                    );
-                }
-            } elseif ($definition instanceof Alias) {
-                $listenersList[] = array(
-                    $serviceId,
-                    'n/a',
-                    0,
-                    sprintf('<comment>alias for</comment> <info>%s</info>', (string) $definition),
-                    $definition->getClass()
-                );
-            }
-        }
-
-        if ($filterEvent) {
-            $listenersList = array_filter(
-                $listenersList,
-                function ($listener) use ($filterEvent) {
-                    return $listener[1] === $filterEvent;
-                }
-            );
-            $order = $options['order-desc'];
-            usort(
-                $listenersList,
-                function ($a, $b) use ($order) {
-                    if ($order) {
-                        return ($a[3] >= $b[3]) ? 1 : -1;
-                    }
-                    return ($a[3] <= $b[3]) ? 1 : -1;
-                }
-            );
-        }
-
-        if ($showListeners) {
-            $listenersList = array_filter(
-                $listenersList,
-                function ($listener) {
-                    return $listener[4] === 'listener';
-                }
-            );
-        }
-
-        if ($showSubscribers) {
-            $listenersList = array_filter(
-                $listenersList,
-                function ($listener) {
-                    return $listener[4] === 'subscriber';
-                }
-            );
-        }
 
         $table->setHeaders(array('Name', 'Event', 'Method', 'Priority', 'Type', 'Class Name'));
         $table->setCellRowFormat('<fg=white>%s</fg=white>');
@@ -350,26 +207,6 @@ EOF
         }
     }
 
-    /**
-     * Obtains the information available from class if it is defined as an EventSubscriber
-     *
-     * @param string $class Fully qualified class name
-     *
-     * @return array array('event.name' => array(array('method','priority')))
-     */
-    public function getEventSubscriberInformation($class)
-    {
-        $events = array();
-        $reflectionClass = new \ReflectionClass($class);
-        $interfaces = $reflectionClass->getInterfaceNames();
-        foreach ($interfaces as $interface) {
-            if ($interface == 'Symfony\\Component\\EventDispatcher\\EventSubscriberInterface') {
-                return $class::getSubscribedEvents();
-            }
-        }
-
-        return $events;
-    }
 
     /**
      * Tell if a $class is an EventSubscriber
@@ -389,37 +226,5 @@ EOF
         }
 
         return false;
-    }
-
-    /**
-     * @param ContainerBuilder $builder
-     * @param string           $serviceId
-     *
-     * @return mixed
-     */
-    protected function resolveServiceDef(ContainerBuilder $builder, $serviceId)
-    {
-        if ($builder->hasDefinition($serviceId)) {
-            return $builder->getDefinition($serviceId);
-        }
-
-        // Some service IDs don't have a Definition, they're simply an Alias
-        if ($builder->hasAlias($serviceId)) {
-            return $builder->getAlias($serviceId);
-        }
-
-        // the service has been injected in some special way, just return the service
-        return $builder->get($serviceId);
-    }
-
-    /**
-     * @return bool
-     */
-    protected function hasEventDispatcher()
-    {
-        return (
-            $this->containerBuilder->hasDefinition('debug.event_dispatcher') ||
-            $this->containerBuilder->hasDefinition('event_dispatcher')
-        );
     }
 }
