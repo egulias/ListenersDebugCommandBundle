@@ -1,2 +1,2 @@
 vendor/
-.local.php.vimrc
+composer.lock
