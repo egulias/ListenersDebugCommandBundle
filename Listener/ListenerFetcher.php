@@ -25,7 +25,7 @@ class ListenerFetcher
 
         $listenersList = array();
         foreach ($listenersIds as $serviceId) {
-            $definition = $this->resolveServiceDef($this->builder, $serviceId);
+            $definition = $this->resolveServiceDef($serviceId);
             if (!$showPrivate && !$definition->isPublic()) {
                 continue;
             }
