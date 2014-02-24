@@ -17,8 +17,7 @@
     },
     "autoload":     {
       "psr-4": { "Egulias\\ListenersDebugCommandBundle\\": "" }
-    },
-    "target-dir": "Egulias/ListenersDebugCommandBundle"
+    }
 }
 
 

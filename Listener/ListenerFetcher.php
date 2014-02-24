@@ -12,6 +12,7 @@ class ListenerFetcher
     const SUBSCRIBER_PATTERN = '/.+\.event_subscriber/';
 
     protected $listeners = array();
+    protected $builder;
 
     public function __construct(ContainerBuilder $builder)
     {
@@ -97,6 +98,37 @@ class ListenerFetcher
 
     }
 
+    public function fetchListener($serviceId)
+    {
+        return $this->resolveServiceDef($serviceId);
+    }
+
+    public function isSubscriber(Definition $definition)
+    {
+        return ($this->classIsEventSubscriber($definition->getClass())) ? true  : false;
+    }
+
+    /**
+     * Obtains the information available from class if it is defined as an EventSubscriber
+     *
+     * @param string $class Fully qualified class name
+     *
+     * @return array array('event.name' => array(array('method','priority')))
+     */
+    public function getEventSubscriberInformation($class)
+    {
+        $events = array();
+        $reflectionClass = new \ReflectionClass($class);
+        $interfaces = $reflectionClass->getInterfaceNames();
+        foreach ($interfaces as $interface) {
+            if ($interface == 'Symfony\\Component\\EventDispatcher\\EventSubscriberInterface') {
+                return $class::getSubscribedEvents();
+            }
+        }
+
+        return $events;
+    }
+
     protected function getIds()
     {
         $listenersIds = array();
@@ -123,6 +155,8 @@ class ListenerFetcher
                 $listenersIds[$id] = $id;
             }
         }
+        asort($listenersIds);
+
         return $listenersIds;
     }
 
@@ -138,44 +172,40 @@ class ListenerFetcher
     }
 
     /**
-     * @param ContainerBuilder $builder
      * @param string           $serviceId
-     *
      * @return mixed
      */
-    protected function resolveServiceDef(ContainerBuilder $builder, $serviceId)
+    protected function resolveServiceDef($serviceId)
     {
-        if ($builder->hasDefinition($serviceId)) {
-            return $builder->getDefinition($serviceId);
+        if ($this->builder->hasDefinition($serviceId)) {
+            return $this->builder->getDefinition($serviceId);
         }
 
-        // Some service IDs don't have a Definition, they're simply an Alias
-        if ($builder->hasAlias($serviceId)) {
-            return $builder->getAlias($serviceId);
+        if ($this->builder->hasAlias($serviceId)) {
+            return $this->builder->getAlias($serviceId);
         }
 
-        // the service has been injected in some special way, just return the service
-        return $builder->get($serviceId);
+        return $this->builder->get($serviceId);
     }
 
+
     /**
-     * Obtains the information available from class if it is defined as an EventSubscriber
+     * Tell if a $class is an EventSubscriber
      *
      * @param string $class Fully qualified class name
      *
-     * @return array array('event.name' => array(array('method','priority')))
+     * @return boolean
      */
-    public function getEventSubscriberInformation($class)
+    protected function classIsEventSubscriber($class)
     {
-        $events = array();
         $reflectionClass = new \ReflectionClass($class);
         $interfaces = $reflectionClass->getInterfaceNames();
         foreach ($interfaces as $interface) {
             if ($interface == 'Symfony\\Component\\EventDispatcher\\EventSubscriberInterface') {
-                return $class::getSubscribedEvents();
+                return true;
             }
         }
 
-        return $events;
+        return false;
     }
 }

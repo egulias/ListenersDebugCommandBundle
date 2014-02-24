@@ -9,7 +9,7 @@ namespace Egulias\ListenersDebugCommandBundle\Listener;
  */
 class ListenerFilter
 {
-    public function filterByEvent($event, $listeners, $order = false)
+    public function filterByEvent($event, $listeners, $asc = false)
     {
         $listenersList = array_filter(
             $listeners,
@@ -18,11 +18,11 @@ class ListenerFilter
             }
         );
 
-        if ($order) {
+        if ($asc) {
             usort(
                 $listenersList,
-                function ($a, $b) use ($order) {
-                    if ($order) {
+                function ($a, $b) use ($asc) {
+                    if ($asc) {
                         return ($a[3] >= $b[3]) ? 1 : -1;
                     }
                     return ($a[3] <= $b[3]) ? 1 : -1;

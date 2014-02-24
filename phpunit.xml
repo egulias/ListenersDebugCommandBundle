@@ -23,4 +23,7 @@
     <directory>./vendor</directory>
   </blacklist>
 </filter>
+<php>
+  <server name="KERNEL_DIR" value="./Tests/" />
+</php>
 </phpunit>
