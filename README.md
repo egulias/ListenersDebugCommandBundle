@@ -1,4 +1,4 @@
-# Listeners debug Command for Symfony2 console [![Build Status](https://travis-ci.org/egulias/ListenersDebugCommandBundle.png?branch=master)](https://travis-ci.org/egulias/ListenersDebugCommandBundle)
+# Listeners debug Command for Symfony2 console [![Build Status](https://travis-ci.org/egulias/ListenersDebugCommandBundle.png?branch=master)](https://travis-ci.org/egulias/ListenersDebugCommandBundle) [![Coverage Status](https://coveralls.io/repos/egulias/ListenersDebugCommandBundle/badge.png?branch=master)](https://coveralls.io/r/egulias/ListenersDebugCommandBundle?branch=master)
 
 This bundle provides a simple command `container:debug:listeners` to allow to easily debug listeners by
 providing useful information about those defined in the app. It will fetch information about all the listeners
