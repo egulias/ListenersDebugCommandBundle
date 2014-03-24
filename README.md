@@ -67,7 +67,7 @@ Add to your composer.json
 ```
 {
     "require": {
-        "egulias/listeners-debug-command-bundle": "1.6.0"
+        "egulias/listeners-debug-command-bundle": "1.9.0"
     }
 }
 ```
