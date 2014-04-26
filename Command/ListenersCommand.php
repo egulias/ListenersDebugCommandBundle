@@ -6,11 +6,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\Output;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerDebugCommand;
 use Egulias\ListenersDebugCommandBundle\Listener\ListenerFetcher;
 use Egulias\ListenersDebugCommandBundle\Listener\ListenerFilter;
+use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\DependencyInjection\Definition;
 
 /**
  * ListenersCommand
