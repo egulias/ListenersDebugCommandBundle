@@ -29,7 +29,7 @@ There are 4 available options:
 * --show-private :                   if issued will show also private services
 * --event=event.name:                if issued will filter to show only the listeners listening to the given name
   (ordered by descending priority)
-** --event=event.name --order-asc:  in combination with --event orders them by ascending priority
+ * --order-asc:  in combination with --event orders them by ascending priority
 * --listeners:                       if issued will filter to show only the listeners (only available since Symfony 2.1.x)
 * --subscribers:                     if issued will filter to show only the subscribers (only available since Symfony 2.1.x)
 
