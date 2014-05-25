@@ -1,26 +1,31 @@
 {
-  "name":         "egulias/listeners-debug-command-bundle",
-  "description":  "Symfony 2 console command to debug listeners",
-  "homepage":     "https://github.com/egulias/ListenersDebugCommandBundle.git",
-  "type":         "symfony-bundle",
-  "keywords":     ["listener", "events"],
-  "license":      "MIT",
-  "authors":      [
-  {
-    "name":     "Eduardo Gulias Davis",
-    "homepage": "http://egulias.com"
-  }
-  ],
+    "name":         "egulias/listeners-debug-command-bundle",
+    "description":  "Symfony 2 console command to debug listeners",
+    "homepage":     "https://github.com/egulias/ListenersDebugCommandBundle.git",
+    "type":         "symfony-bundle",
+    "keywords":     ["listener", "events"],
+    "license":      "MIT",
+    "authors":      [
+        {
+            "name":     "Eduardo Gulias Davis",
+            "homepage": "http://egulias.com"
+        }
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    },
     "require":      {
-      "symfony/symfony":  ">=2.3"
+        "symfony/symfony":  ">=2.3",
+        "egulias/listeners-debug": "1.0.*"
 
     },
-    "require-dev": {
+    "require-dev":  {
+        "phpunit/phpunit": "4.0.*",
         "satooshi/php-coveralls": "dev-master"
     },
     "autoload":     {
-      "psr-4": { "Egulias\\ListenersDebugCommandBundle\\": "" }
+        "psr-4": { "Egulias\\ListenersDebugCommandBundle\\": "" }
     }
 }
-
-

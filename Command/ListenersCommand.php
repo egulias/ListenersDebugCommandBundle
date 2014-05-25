@@ -7,8 +7,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerDebugCommand;
-use Egulias\ListenersDebugCommandBundle\Listener\ListenerFetcher;
-use Egulias\ListenersDebugCommandBundle\Listener\ListenerFilter;
+use Egulias\ListenersDebug\Listener\ListenerFetcher;
+use Egulias\ListenersDebug\Listener\ListenerFilter;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Definition;
 
@@ -97,20 +97,21 @@ EOF
         $fetcher = new ListenerFetcher($this->getContainerBuilder());
         $filter = new ListenerFilter();
         $listeners = $fetcher->fetchListeners($options['show-private']);
+        $label = '<comment>Public</comment> (services) listeners';
 
         if ($options['event']) {
             $listeners = $filter->filterByEvent($options['event'], $listeners, $options['order-desc']);
         }
 
         if ($options['show-listeners']) {
-            $listeners = $filter->fetchListeners($listeners);
+            $listeners = $filter->getListeners($listeners);
         }
 
         if ($options['show-subscribers']) {
-            $listeners = $filter->fetchSubscribers($listeners);
+            $label = '<comment>Public</comment> (services) subscribers';
+            $listeners = $filter->getSubscribers($listeners);
         }
 
-        $label = '<comment>Public</comment> (services) listeners';
         if ($options['show-private']) {
             $label = '<comment>Public</comment> and <comment>private</comment> (services) listeners';
         }
