@@ -1,16 +1,24 @@
 <?php
 
+/**
+ * This file is part of ListenersDebugCommandBundle
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Egulias\ListenersDebugCommandBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerDebugCommand;
-use Egulias\ListenersDebug\Listener\ListenerFetcher;
-use Egulias\ListenersDebug\Listener\ListenerFilter;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Definition;
+
+use Egulias\ListenersDebug\Listener\ListenerFetcher;
+use Egulias\ListenersDebug\Listener\ListenerFilter;
 
 /**
  * ListenersCommand
@@ -88,8 +96,8 @@ EOF
     /**
      * outputListeners
      *
-     * @param OutputInterface $output       Output
-     * @param array           $options      array of options from the console
+     * @param OutputInterface $output  Output
+     * @param array           $options array of options from the console
      *
      */
     protected function outputListeners(OutputInterface $output, $options = array())
@@ -139,6 +147,7 @@ EOF
 
         if ($definition instanceof Alias) {
             $output->writeln(sprintf('This service is an alias for the service <info>%s</info>', (string) $definition));
+
             return;
         }
 

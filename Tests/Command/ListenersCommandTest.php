@@ -1,14 +1,29 @@
 <?php
 
+/**
+ * This file is part of ListenersDebugCommandBundle
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Egulias\ListenersDebugCommandBundle\Test\Command;
 
-use Egulias\ListenersDebugCommandBundle\Command\ListenersCommand;
+use PHPUnit_Framework_TestCase;
+
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
-class ListenersCommandTest extends \PHPUnit_Framework_TestCase
+use Egulias\ListenersDebugCommandBundle\Command\ListenersCommand;
+
+/**
+ * ListenersCommand test
+ *
+ * @author Eduardo Gulias <me@egulias.com>
+ */
+class ListenersCommandTest extends PHPUnit_Framework_TestCase
 {
     protected $application;
 
