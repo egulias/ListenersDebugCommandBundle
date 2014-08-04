@@ -17,7 +17,11 @@
         }
     },
     "require":      {
-        "symfony/symfony":  ">=2.3",
+        "symfony/http-kernel":  "~2.3",
+        "symfony/dependency-injection":  "~2.3",
+        "symfony/console": "~2.3",
+        "symfony/framework-bundle": "~2.3",
+
         "egulias/listeners-debug": "1.0.*"
 
     },
