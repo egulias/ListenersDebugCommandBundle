@@ -154,10 +154,6 @@ EOF
         $output->writeln(sprintf('<comment>Listener Id</comment>   %s', $serviceId));
         $output->writeln(sprintf('<comment>Class</comment>         %s', $definition->getClass()));
 
-        if ($definition instanceof Definition) {
-            return;
-        }
-
         $type = ($fetcher->isSubscriber($definition)) ? 'subscriber' : 'listener';
         $output->writeln(sprintf('<comment>Type</comment>         %s', $type));
         $output->writeln(sprintf('<comment>Listens to</comment>', ''));
@@ -165,8 +161,8 @@ EOF
 
         $tags = $definition->getTags();
         foreach ($tags as $tag => $details) {
-            if (preg_match(self::SUBSCRIBER_PATTERN, $tag)) {
-                $subscribed = $this->getEventSubscriberInformation($definition->getClass());
+            if (preg_match(ListenerFetcher::SUBSCRIBER_PATTERN, $tag)) {
+                $subscribed = $fetcher->getEventSubscriberInformation($definition->getClass());
                 foreach ($subscribed as $name => $current) {
                     //Exception when event only has the method name
                     if (!is_array($current)) {
@@ -178,12 +174,14 @@ EOF
                     $event['name'] = $name;
                     $event['method'] = $current[0];
                     $event['priority'] = (isset($current[1])) ? $current[1] : 0;
+                    $events[] = $event;
                 }
-            } elseif (preg_match(self::LISTENER_PATTERN, $tag)) {
+            } elseif (preg_match(ListenerFetcher::LISTENER_PATTERN, $tag)) {
                 foreach ($details as $current) {
                     $event['name'] = $current['event'];
                     $event['method'] = (isset($current['method'])) ? $current['method'] : $current['event'];
                     $event['priority'] = isset($current['priority']) ? $current['priority'] : 0;
+                    $events[] = $event;
                 }
             }
         }

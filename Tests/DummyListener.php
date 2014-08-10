@@ -1,16 +1,9 @@
 <?php
 
-namespace Egulias\ListenersDebugCommandBundle\Test;
+namespace Egulias\ListenersDebugCommandBundle\Tests;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-class DummyListener implements EventSubscriberInterface
+class DummyListener
 {
-    public static function getSubscribedEvents()
-    {
-        return array ('kernel.terminate' => 'listen');
-    }
-
     public function listen()
     {
 

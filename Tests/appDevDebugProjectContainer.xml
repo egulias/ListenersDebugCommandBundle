@@ -9,11 +9,15 @@
     <parameter key="kernel.logs_dir">/home/eduardo/workspace/sf/app/logs</parameter>
   </parameters>
   <services>
-    <service id="dummy_listener" class="Egulias\ListenersDebugCommandBundle\Test\DummyListener">
+    <service id="dummy_listener" class="Egulias\ListenersDebugCommandBundle\Tests\DummyListener">
       <tag name="kernel.event_listener" event="kernel.controller" priority="8"/>
+        <tag name="kernel.event_listener" event="kernel.view" priority="8" method="listen"/>
     </service>
-    <service id="dummy_listener_subscriber" class="Egulias\ListenersDebugCommandBundle\Test\DummyListener">
+    <service id="dummy_listener_subscriber" class="Egulias\ListenersDebugCommandBundle\Tests\DummySubscriber">
         <tag name="kernel.event_subscriber"/>
     </service>
+      <service id="dummy_listener_subscriber_alias" alias ="dummy_listener_subscriber">
+          <tag name="kernel.event_subscriber"/>
+      </service>
   </services>
 </container>
