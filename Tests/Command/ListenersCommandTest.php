@@ -52,10 +52,10 @@ class ListenersCommandTest extends PHPUnit_Framework_TestCase
 
     public function testEventNameFilter()
     {
-        $display = $this->executeCommand(array('name' => 'acme.demo.listener'));
+        $display = $this->executeCommand(array('name' => 'dummy_listener'));
 
         $this->assertRegExp('/Class/', $display);
-        $this->assertRegExp('/ControllerListener/', $display);
+        $this->assertRegExp('/DummyListener/', $display);
     }
 
     public function testFilterByEventName()
