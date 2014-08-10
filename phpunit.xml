@@ -21,6 +21,7 @@
 <filter>
   <blacklist>
     <directory>./vendor</directory>
+    <directory>./Tests</directory>
   </blacklist>
 </filter>
 <php>

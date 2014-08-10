@@ -1,14 +1,29 @@
 <?php
 
+/**
+ * This file is part of ListenersDebugCommandBundle
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Egulias\ListenersDebugCommandBundle\Test\Command;
 
-use Egulias\ListenersDebugCommandBundle\Command\ListenersCommand;
+use PHPUnit_Framework_TestCase;
+
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
-class ListenersCommandTest extends \PHPUnit_Framework_TestCase
+use Egulias\ListenersDebugCommandBundle\Command\ListenersCommand;
+
+/**
+ * ListenersCommand test
+ *
+ * @author Eduardo Gulias <me@egulias.com>
+ */
+class ListenersCommandTest extends PHPUnit_Framework_TestCase
 {
     protected $application;
 
@@ -35,12 +50,41 @@ class ListenersCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/Class Name/', $display);
     }
 
-    public function testEventNameFilter()
+    public function testEventNameFilterForListener()
     {
-        $display = $this->executeCommand(array('name' => 'acme.demo.listener'));
+        $display = $this->executeCommand(array('name' => 'dummy_listener'));
 
         $this->assertRegExp('/Class/', $display);
-        $this->assertRegExp('/ControllerListener/', $display);
+        $this->assertRegExp('/DummyListener/', $display);
+        $this->assertRegExp('/Event/', $display);
+        $this->assertRegExp('/Method/', $display);
+        $this->assertRegExp('/Type/', $display);
+        $this->assertRegExp('/Priority/', $display);
+        $this->assertRegExp('/listener/', $display);
+        $this->assertRegExp('/listen/', $display);
+        $this->assertRegExp('/8/', $display);
+    }
+
+    public function testEventNameFilterForSubscriber()
+    {
+        $display = $this->executeCommand(array('name' => 'dummy_listener_subscriber'));
+
+        $this->assertRegExp('/Class/', $display);
+        $this->assertRegExp('/DummySubscriber/', $display);
+        $this->assertRegExp('/Event/', $display);
+        $this->assertRegExp('/Method/', $display);
+        $this->assertRegExp('/Priority/', $display);
+        $this->assertRegExp('/Type/', $display);
+        $this->assertRegExp('/subscriber/', $display);
+        $this->assertRegExp('/listen/', $display);
+        $this->assertRegExp('/8/', $display);
+    }
+
+    public function testEventNameFilterForAlias()
+    {
+        $display = $this->executeCommand(array('name' => 'dummy_listener_subscriber_alias'));
+
+        $this->assertRegExp('/alias for the service dummy_listener_subscriber/', $display);
     }
 
     public function testFilterByEventName()
@@ -63,6 +107,19 @@ class ListenersCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotRegExp('/\|listener\|/', $display);
     }
+
+    public function testShowPrivate()
+    {
+        $display = $this->executeCommand(array('--show-private' => null));
+
+        $this->assertNotRegExp('/\|private\|/', $display);
+    }
+
+    public function testShowOnlyOneListener()
+    {
+
+    }
+
     private function executeCommand(array $options)
     {
         $command = $this->application->find('container:debug:listeners');
