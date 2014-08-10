@@ -58,7 +58,7 @@ class ListenersCommand extends ContainerDebugCommand
                 ),
             )
         )
-        ->setName('container:debug:listeners')
+        ->setName('container:listeners-debug')
         ->setDescription('Displays current services defined as listeners for an application')
         ->setHelp(
             <<<EOF

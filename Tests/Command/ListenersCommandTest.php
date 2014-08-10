@@ -122,7 +122,7 @@ class ListenersCommandTest extends PHPUnit_Framework_TestCase
 
     private function executeCommand(array $options)
     {
-        $command = $this->application->find('container:debug:listeners');
+        $command = $this->application->find('container:listeners-debug');
         $commandTester = new CommandTester($command);
         $default = array('command' => $command->getName());
         $options = array_merge($default, $options);
