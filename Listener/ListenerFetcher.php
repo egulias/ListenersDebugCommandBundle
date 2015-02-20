@@ -78,7 +78,7 @@ class ListenerFetcher
                     $listenersList[] = array(
                         $serviceId,
                         $listener['event'],
-                        $listener['method'],
+                        (isset($listener['method'])) ? $listener['method'] : null,
                         (isset($listener['priority'])) ? $listener['priority'] : 0,
                         'listener',
                         $definition->getClass()
