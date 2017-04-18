@@ -61,7 +61,7 @@ There are 4 available options:
 ## Get the bundle
 Add to your composer.json
 
-##Symfony >= 2.3
+## Symfony >= 2.3
 
 
 ```
@@ -72,7 +72,7 @@ Add to your composer.json
 }
 ```
 
-##Symfony >= 2.2
+## Symfony >= 2.2
 
 ```
 {
@@ -103,7 +103,7 @@ $ php composer.phar update egulias/listeners-debug-command-bundle
   }
 ```
 
-##Symfony 2.0.x
+## Symfony 2.0.x
 Add to your `/deps` file :
 
 ```
